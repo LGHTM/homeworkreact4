@@ -1,17 +1,47 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
+import DemoWithProgressBar from "./Nanobar";
+import Albumlist from "./AlbumList";
+
+class FallbackWrapper extends React.Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      isError: false
+    }
+  }
+
+
+  componentDidCatch(error, info){
+    console.log(error, info.componentStack)
+    this.setState({
+      isError: true
+    })
+  };
+
+  render(){
+    return this.state.isError ? this.props.errorMessage : this.props.children;
+  }
+}
+
+class Error extends React.Component {
+render(){return undefined.call()}
+}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+  <div>
+    <DemoWithProgressBar />
+    
+    <FallbackWrapper key={'1'} errorMessage="Unexpected error">
+      <Error/>
+    </FallbackWrapper>
+    <FallbackWrapper key={'2'} errorMessage="Unexpected error">
+      <h1>Some header</h1>
+    </FallbackWrapper>
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+    <Albumlist />
+  </div>,
+  document.getElementById("root")
+);
